@@ -1,0 +1,5 @@
+{
+  "extra_repos": "/home/voor/workspace/kubernetes-gpu/libnvidia-container.repo",
+  "extra_rpms": "nvidia-container-runtime",
+  "containerd_additional_settings": "ICAgIFtwbHVnaW5zLiJpby5jb250YWluZXJkLmdycGMudjEuY3JpIi5jb250YWluZXJkLnJ1bnRpbWVzLm52aWRpYS1jb250YWluZXItcnVudGltZV0KICAgICAgICBydW50aW1lX3R5cGUgPSAiaW8uY29udGFpbmVyZC5ydW50aW1lLnYxLmxpbnV4IgogICAgICAgIHJ1bnRpbWVfZW5naW5lID0gIi91c3IvYmluL252aWRpYS1jb250YWluZXItcnVudGltZSIKICAgICAgICBydW50aW1lX3Jvb3QgPSAiIgogICAgICAgIHByaXZpbGVnZWRfd2l0aG91dF9ob3N0X2RldmljZXMgPSBmYWxzZQ=="
+}

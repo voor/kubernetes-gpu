@@ -1,0 +1,83 @@
+apiVersion: cluster.x-k8s.io/v1alpha3
+kind: Cluster
+metadata:
+  name: gpus
+  namespace: default
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 100.96.0.0/11
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1alpha3
+    kind: KubeadmControlPlane
+    name: gpus-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha3
+    kind: AWSCluster
+    name: gpus
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha3
+kind: AWSCluster
+metadata:
+  name: gpus
+  namespace: default
+spec:
+  bastion:
+    enabled: true
+  networkSpec:
+    subnets:
+    - availabilityZone: us-east-1a
+      cidrBlock: 10.0.1.0/24
+      isPublic: true
+    - availabilityZone: us-east-1a
+      cidrBlock: 10.0.0.0/24
+    vpc:
+      cidrBlock: 10.0.0.0/16
+  region: us-east-1
+  sshKeyName: cluster-api-provider-aws
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1alpha3
+kind: KubeadmControlPlane
+metadata:
+  name: gpus-control-plane
+  namespace: default
+spec:
+  infrastructureTemplate:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha3
+    kind: AWSMachineTemplate
+    name: gpus-control-plane
+  kubeadmConfigSpec:
+    clusterConfiguration:
+      apiServer:
+        extraArgs:
+          cloud-provider: aws
+      controllerManager:
+        extraArgs:
+          cloud-provider: aws
+      kubernetesVersion: v1.17.3
+    initConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: aws
+        name: '{{ ds.meta_data.local_hostname }}'
+    joinConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: aws
+        name: '{{ ds.meta_data.local_hostname }}'
+    useExperimentalRetryJoin: true
+  replicas: 1
+  version: v1.17.3
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha3
+kind: AWSMachineTemplate
+metadata:
+  name: gpus-control-plane
+  namespace: default
+spec:
+  template:
+    spec:
+      iamInstanceProfile: control-plane.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: t3.large
+      sshKeyName: cluster-api-provider-aws
